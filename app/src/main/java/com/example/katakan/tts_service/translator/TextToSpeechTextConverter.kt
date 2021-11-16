@@ -24,8 +24,6 @@ class TextToSpeechTextConverter(private val textConverterCallback: TextConverter
                 textToSpeech!!.language = locale
                 textToSpeech!!.setPitch(1.3f)
                 textToSpeech!!.setSpeechRate(1f)
-                textToSpeech!!.language = locale
-
                 startSTT(message)
 
             } else {

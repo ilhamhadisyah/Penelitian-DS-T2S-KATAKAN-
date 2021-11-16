@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">KATAKAN</string>
     <string name="init">…</string>
-    <string name="halo_katakan_ambil_untuk_mengetahui_objek_di_depanmu">Halo, katakan ambil untuk mengetahui objek di depanmu</string>
+    <string name="halo_katakan_ambil_untuk_mengetahui_objek_di_depanmu">Gunakan Keyword KATAKAN untuk mengetahui ada apa di depanmu</string>
 </resources>
