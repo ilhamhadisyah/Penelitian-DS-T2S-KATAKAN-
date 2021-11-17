@@ -27,6 +27,16 @@
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/voice2" />
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/processing"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        app:layout_constraintBottom_toTopOf="@+id/caption"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/processing" />
 
     <TextView
         android:id="@+id/caption"
@@ -49,14 +59,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:text="sementara untuk reload Speech Recognizer pakai ini"
-        app:layout_constraintBottom_toTopOf="@+id/caption"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayoutCompat"
-        app:layout_constraintStart_toEndOf="@+id/lottieAnimationView"
-        app:layout_constraintTop_toTopOf="@+id/lottieAnimationView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

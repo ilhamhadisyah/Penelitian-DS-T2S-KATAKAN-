@@ -1,41 +1,64 @@
 package com.example.katakan.ui.dashboard
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProviders
 import com.example.katakan.databinding.ActivityMainBinding
 import com.example.katakan.R
 import com.example.katakan.camera_service.CameraService
+import com.example.katakan.data.network.retrofit.ApiHelper
+import com.example.katakan.data.network.retrofit.RetrofitBuilder
 import com.example.katakan.tts_service.SpeechHelper
 import com.example.katakan.tts_service.SpeechRecognitionCallback
 import com.example.katakan.tts_service.TextConverterCallback
 import com.example.katakan.tts_service.VoiceEngineFactory
+import com.example.katakan.viewmodel.MainViewModel
+import com.example.katakan.viewmodel.viewmodelfactory.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
-import java.util.concurrent.ExecutorService
+import java.io.*
+import android.util.Log
+import android.view.View
+import androidx.lifecycle.Observer
+import com.example.katakan.data.network.Status
+import com.example.katakan.utils.ImageUtils
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
     private lateinit var speechHelper: SpeechHelper
-
     private lateinit var cameraService: CameraService
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var imageUtils: ImageUtils
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        initView()
+        setUpViewModel()
         initSTT()
-        cameraService = CameraService(this, this)
-        cameraService.setSurfaceProvider(binding.viewFinder)
         speechHelper.startRecognition()
         binding.lottieAnimationView.setOnClickListener {
             speechHelper.startRecognition()
         }
+    }
+    private fun initView() {
+        binding.processing.visibility = View.GONE
+        imageUtils = ImageUtils(this)
+        cameraService = CameraService(this, this)
+        cameraService.setSurfaceProvider(binding.viewFinder)
+    }
+
+
+    private fun setUpViewModel() {
+        mainViewModel =
+            ViewModelProviders.of(this, ViewModelFactory(ApiHelper(RetrofitBuilder.apiService)))
+                .get(MainViewModel::class.java)
     }
 
     private fun initSTT() {
@@ -54,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                 if (results.contains("katakan")) {
                     //do capture
                     binding.caption.text = results
-                    takePict()
+                    capture()
                 } else {
                     speak("Perintah tidak dikenali, mohon di ulang")
                 }
@@ -79,8 +102,40 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun takePict() {
+    private fun capture() {
         val bitmap = binding.viewFinder.bitmap
-        binding.previewTest.setImageBitmap(bitmap)
+        val out = ByteArrayOutputStream()
+        bitmap?.compress(Bitmap.CompressFormat.JPEG, 50, out)
+        val scaledBitmap = BitmapFactory.decodeStream(ByteArrayInputStream(out.toByteArray()))
+        binding.previewTest.setImageBitmap(scaledBitmap)
+        val requestBody =
+            RequestBody.create("image/*".toMediaTypeOrNull(), imageUtils.createTempFile(scaledBitmap!!)!!)
+        fetchCaption(requestBody)
+    }
+
+    private fun fetchCaption(body: RequestBody) {
+        mainViewModel.getCaption(body).observe(this, Observer {
+            it?.let { resources ->
+                when (resources.status) {
+                    Status.SUCCESS -> {
+                        binding.processing.visibility = View.GONE
+                        binding.lottieAnimationView.visibility = View.VISIBLE
+                        val capt = resources.data?.result.toString()
+                        Log.d("success", capt)
+                        binding.caption.text = capt
+                        speak(capt)
+
+                    }
+                    Status.ERROR -> {
+                        Log.e("error", resources.message!!)
+                        binding.caption.text = resources.message
+                    }
+                    Status.LOADING -> {
+                        binding.processing.visibility = View.VISIBLE
+                        binding.lottieAnimationView.visibility = View.GONE
+                    }
+                }
+            }
+        })
     }
 }
