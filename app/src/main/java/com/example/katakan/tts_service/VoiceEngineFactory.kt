@@ -16,10 +16,10 @@ class VoiceEngineFactory private constructor() {
         fun startRecognition()
     }
 
-
     fun with(textConverterCallback: TextConverterCallback): TextConverterInterface {
         return TextToSpeechTextConverter(textConverterCallback)
     }
+
     fun with(speechRecognitionCallback: SpeechRecognitionCallback): SpeechConverterInterface {
         return SpeechRecognitionService(speechRecognitionCallback)
     }

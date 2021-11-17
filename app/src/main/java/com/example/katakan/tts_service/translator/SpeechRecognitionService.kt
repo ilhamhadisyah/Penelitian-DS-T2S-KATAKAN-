@@ -48,8 +48,6 @@ class SpeechRecognitionService(private val speechRecognitionCallback: SpeechReco
         sr.startListening(intent)
     }
 
-
-
     internal inner class CustomRecognitionListener : RecognitionListener {
 
         override fun onReadyForSpeech(params: Bundle) {

@@ -28,10 +28,8 @@ class WelcomeActivity : AppCompatActivity() {
 
         if (allPermissionsGranted()) {
             if (Build.VERSION.SDK_INT >= 23) {
-                // Pain in A$$ Marshmallow+ Permission APIs
                 marshmallowOrAbove()
             } else {
-                // Pre-Marshmallow
                 setUpView()
             }
         } else {
@@ -69,7 +67,6 @@ class WelcomeActivity : AppCompatActivity() {
         permissionsList: MutableList<String>,
         permission: String
     ): Boolean {
-
         if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
             permissionsList.add(permission)
             if (!shouldShowRequestPermissionRationale(permission))
@@ -91,10 +88,8 @@ class WelcomeActivity : AppCompatActivity() {
                 for (i in permissions.indices)
                     perms[permissions[i]] = grantResults[i]
                 if (perms[Manifest.permission.RECORD_AUDIO] == PackageManager.PERMISSION_GRANTED) {
-                    // All Permissions Granted
                     setUpView()
                 } else {
-                    // Permission Denied
                     Toast.makeText(
                         applicationContext,
                         "Some Permissions are Denied Exiting App",
@@ -118,6 +113,7 @@ class WelcomeActivity : AppCompatActivity() {
                 override fun onStart(result: String) {}
                 override fun onDone(utteranceId: String) {
                     startActivity(Intent(this@WelcomeActivity, MainActivity::class.java))
+                    finishAffinity()
                 }
 
                 override fun onError(message: String) {}
