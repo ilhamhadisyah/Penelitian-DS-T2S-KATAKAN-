@@ -1,9 +1,12 @@
 package com.example.katakan.ui.dashboard
 
+import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import androidx.lifecycle.ViewModelProviders
 import com.example.katakan.databinding.ActivityMainBinding
 import com.example.katakan.R
@@ -20,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 import java.io.*
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import com.example.katakan.data.network.Status
 import com.example.katakan.utils.ImageUtils
@@ -34,19 +38,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cameraService: CameraService
     private lateinit var mainViewModel: MainViewModel
     private lateinit var imageUtils: ImageUtils
+    private lateinit var alertDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initView()
         setUpViewModel()
+        initView()
         initSTT()
         speechHelper.startRecognition()
-        binding.lottieAnimationView.setOnClickListener {
-            speechHelper.startRecognition()
-        }
+
     }
+
     private fun initView() {
         binding.processing.visibility = View.GONE
         imageUtils = ImageUtils(this)
@@ -57,8 +61,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpViewModel() {
         mainViewModel =
-            ViewModelProviders.of(this, ViewModelFactory(ApiHelper(RetrofitBuilder.apiService)))
-                .get(MainViewModel::class.java)
+            ViewModelProviders.of(this, ViewModelFactory(ApiHelper(RetrofitBuilder.apiService)))[MainViewModel::class.java]
     }
 
     private fun initSTT() {
@@ -103,6 +106,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun capture() {
+        speechHelper.stopRecognition()
         val bitmap = binding.viewFinder.bitmap
         val out = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 50, out)
@@ -137,5 +141,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        speechHelper.stopRecognition()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        speechHelper.startRecognition()
     }
 }

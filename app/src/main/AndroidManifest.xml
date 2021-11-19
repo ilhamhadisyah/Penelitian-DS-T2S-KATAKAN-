@@ -24,16 +24,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KATAKAN"
         android:usesCleartextTraffic="true">
-
         <activity
-            android:name=".ui.welcome.WelcomeActivity"
-            android:exported="true"
-            android:theme="@style/Theme.KATAKAN.NoActionBar">
+            android:name=".ui.splash.InitActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.welcome.WelcomeActivity"
+            android:exported="true"
+            android:theme="@style/Theme.KATAKAN.NoActionBar">
+
         </activity>
         <activity
             android:name=".ui.dashboard.MainActivity"
