@@ -26,8 +26,15 @@ class InitActivity : AppCompatActivity(), PermissionListener {
         setContentView(binding.root)
         permissionManager =
             PermissionManager(this, REQUIRED_PERMISSIONS, PERMISSION_REQUEST_CODE, this)
-        permissionManager.checkPermissions()
+        val locale = checkLanguage()
+        if (locale){
+            permissionManager.checkPermissions()
 
+        }else{
+            toast("Applikasi memerlukan bahasa indonesia untuk bekerja dengan baik")
+            changeLanguageDialog()
+        }
+        //permissionManager.checkPermissions()
     }
 
     private fun changeLanguageDialog() {
@@ -37,15 +44,19 @@ class InitActivity : AppCompatActivity(), PermissionListener {
             .setMessage("Aplikasi ini membutuhkan support Bahasa Indonesia untuk berjalan dengan lancar")
             .setPositiveButton("Buka pengaturan", DialogInterface.OnClickListener { _, _ ->
                 val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
-                startActivityForResult(intent,1001)
+                startActivityForResult(intent, 1001)
 
             })
             .setNegativeButton("Batal", DialogInterface.OnClickListener { dialog, _ ->
-                dialog.dismiss()
                 finishAffinity()
             })
             .setOnDismissListener { finishAffinity() }
             .show()
+    }
+
+    private fun checkLanguage():Boolean {
+        val locale = resources.configuration.locales[0].toString()
+        return locale.contains("in_ID")
     }
 
 
@@ -56,9 +67,9 @@ class InitActivity : AppCompatActivity(), PermissionListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when(resultCode){
-            1001->{
-                recreate()
+        when (resultCode) {
+            1001 -> {
+                permissionManager.checkPermissions()
             }
         }
     }
@@ -74,11 +85,7 @@ class InitActivity : AppCompatActivity(), PermissionListener {
                     .processPermissionsResult(requestCode, permissions, grantResults)
 
                 if (isPermissionsGranted) {
-                    if (resources.configuration.locales.toString().contains("in_ID")) {
-                        goToIntro()
-                    } else {
-                        changeLanguageDialog()
-                    }
+                    goToIntro()
                 } else {
                     finishAffinity()
                 }
@@ -105,6 +112,7 @@ class InitActivity : AppCompatActivity(), PermissionListener {
 
     override fun onPermissionNeeded() {
         toast("Need to give permissions")
+        finishAffinity()
     }
 
 
