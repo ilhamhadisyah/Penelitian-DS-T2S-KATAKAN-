@@ -38,29 +38,4 @@ class CameraService constructor(activity: Activity, lifecycleOwner: LifecycleOwn
     fun setSurfaceProvider(viewFinder: PreviewView) {
         previewView = viewFinder
     }
-//    private fun takePhoto() {
-//        val imageCapture = imageCapture ?: return
-//        val photoFile = File(
-//            outputDirectory,
-//            SimpleDateFormat(
-//                FILENAME_FORMAT, Locale.US
-//            ).format(System.currentTimeMillis()) + ".jpg"
-//        )
-//        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-//        imageCapture.takePicture(
-//            outputOptions,
-//            ContextCompat.getMainExecutor(this),
-//            object : ImageCapture.OnImageSavedCallback {
-//                override fun onError(exc: ImageCaptureException) {
-//                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-//                }
-//
-//                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-//                    val savedUri = Uri.fromFile(photoFile)
-//                    val msg = "Photo capture succeeded: $savedUri"
-//                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-//                    Log.d(TAG, msg)
-//                }
-//            })
-//    }
 }

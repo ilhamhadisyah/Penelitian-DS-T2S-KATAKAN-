@@ -13,6 +13,10 @@ import com.example.katakan.databinding.ActivityInitBinding
 import com.example.katakan.ui.welcome.WelcomeActivity
 import com.example.katakan.utils.PermissionListener
 import com.example.katakan.utils.PermissionManager
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class InitActivity : AppCompatActivity(), PermissionListener {
 
@@ -20,17 +24,26 @@ class InitActivity : AppCompatActivity(), PermissionListener {
     private lateinit var alertDialog: AlertDialog
     private lateinit var permissionManager: PermissionManager
 
+    @DelicateCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityInitBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        GlobalScope.launch {
+            delay(2000L)
+            initView()
+        }
+    }
+
+    private fun initView() {
         permissionManager =
             PermissionManager(this, REQUIRED_PERMISSIONS, PERMISSION_REQUEST_CODE, this)
         val locale = checkLanguage()
-        if (locale){
+        if (locale) {
             permissionManager.checkPermissions()
 
-        }else{
+        } else {
             toast("Applikasi memerlukan bahasa indonesia untuk bekerja dengan baik")
             changeLanguageDialog()
         }
@@ -111,7 +124,7 @@ class InitActivity : AppCompatActivity(), PermissionListener {
     }
 
     override fun onPermissionNeeded() {
-        toast("Need to give permissions")
+        toast("Perizinan dibutuhkan")
         finishAffinity()
     }
 
